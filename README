@@ -1,0 +1,7 @@
+Линукс ашиглаж байгаа бол дараах дарааллаар суулгаарай
+$sudo apt-get install build-essential python-dev swig python-pygame subversion
+$svn checkout http://pybox2d.googlecode.com/svn/trunk/ pybox2d
+$cd pybox2d/
+$sudo python setup.py install --force
+
+
