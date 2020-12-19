@@ -20,7 +20,7 @@ class State(object):
         pass
     def handle_update(self, delta_time):
         pass
-    def handle_eras(self, screen):
+    def handle_erase(self, screen):
         pass
     def handle_draw(self, screen):
         pass

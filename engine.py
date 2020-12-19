@@ -34,21 +34,21 @@ class Engine:
                 self.state = self.states[self.next_state]
                 self.state.set_engine(self)
                 self.state.handle_enter(self.next_state_parameters)
-                if self.next_state is next_state:
+                if self.next_state == next_state:
                     self.next_state            = None
                     self.next_state_parameters = None
             for event in pygame.event.get():
                 if event.type is pygame.QUIT:
                     self.exit()
-                elif event.type is pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     self.state.handle_key_down(event.key)
-                elif event.type is pygame.KEYUP:
+                elif event.type == pygame.KEYUP:
                     self.state.handle_key_up(event.key)
-                elif event.type is pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.state.handle_mouse_button_down(event.button, event.pos)
-                elif event.type is pygame.MOUSEBUTTONUP:
+                elif event.type == pygame.MOUSEBUTTONUP:
                     self.state.handle_mouse_button_up(event.button, event.pos)
-                elif event.type is pygame.MOUSEMOTION:
+                elif event.type == pygame.MOUSEMOTION:
                     self.state.handle_mouse_motion(event.rel, event.pos, event.buttons)
                 else:
                     pass

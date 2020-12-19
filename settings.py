@@ -9,6 +9,6 @@ KEY_SHOOTBALL = K_UP
 
 
 tile_dim    = (16,16)
-tile_size   = 48
+tile_size   = 32
 screen_size = (tile_dim[0]*tile_size+5*tile_size, tile_dim[1]*tile_size)
 key         = 1989
