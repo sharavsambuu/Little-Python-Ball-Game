@@ -1,7 +1,8 @@
 import pygame
-from settings   import *
-from engine     import *
-from state_menu import *
+from settings    import *
+from engine      import *
+from state_menu  import *
+from state_about import *
 
 pygame.mixer.init(44100, 16, 2, 1024)
 pygame.init()
@@ -18,7 +19,8 @@ states = {
             ("Settings", [("fps", (False, True)), ("Music", (True, False))]),
             ("About"   , "about", {}),
             ("Exit game", Menu.MENU_QUIT)
-            ])
+            ]),
+        "about": About()
         }
 if __name__ == "__main__":
     try:
