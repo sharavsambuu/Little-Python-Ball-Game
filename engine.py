@@ -1,72 +1,70 @@
 import pygame
-from settings import *
+from settings import SCREEN_SIZE
 
 class Engine:
-    states                = {}
-    next_state            = None
-    next_state_parameters = None
-    state                 = None
-    running               = False
-
-    screen = pygame.display.set_mode(screen_size)
-
     def __init__(self,
-            states,
-            first_state,
-            first_state_parameters,
-            screen_size,
-            window_title="Game Engine"
-            ):
-        pygame.display.set_caption(window_title)
-        self.states = states
-        self.state  = self.states[first_state]
-        self.state.set_engine(self)
-        self.state.handle_enter(first_state_parameters)
+                 states,
+                 first_state_key,
+                 first_state_params,
+                 window_title="Game Engine"):
 
-    def run(self,):
+        self.screen = pygame.display.set_mode(SCREEN_SIZE)
+        pygame.display.set_caption(window_title)
+
+        self.states        = states
+        self.current_state = self.states[first_state_key]
+        self.current_state.set_engine(self)
+        self.current_state.handle_enter(first_state_params if first_state_params else {})
+
+        self.next_state_key    = None
+        self.next_state_params = None
+        self.running           = False
+        self.clock             = pygame.time.Clock()
+
+    def run(self):
         self.running = True
-        update_clock = pygame.time.Clock()
 
         while self.running:
-            if self.next_state is not None:
-                next_state = self.next_state
-                self.state.handle_exit()
-                self.state = self.states[self.next_state]
-                self.state.set_engine(self)
-                self.state.handle_enter(self.next_state_parameters)
-                if self.next_state == next_state:
-                    self.next_state            = None
-                    self.next_state_parameters = None
-            for event in pygame.event.get():
-                if event.type is pygame.QUIT:
+            if self.next_state_key is not None:
+                target_state_key = self.next_state_key
+                target_params    = self.next_state_params if self.next_state_params else {}
+
+                self.current_state.handle_exit()
+                print(f"Transitioning from {type(self.current_state).__name__} to {target_state_key}") 
+                self.current_state = self.states[target_state_key]
+                self.current_state.set_engine(self)
+                self.current_state.handle_enter(target_params)
+
+                self.next_state_key    = None
+                self.next_state_params = None
+
+            events = pygame.event.get() 
+            for event in events:
+                if event.type == pygame.QUIT:
                     self.exit()
-                elif event.type == pygame.KEYDOWN:
-                    self.state.handle_key_down(event.key)
-                elif event.type == pygame.KEYUP:
-                    self.state.handle_key_up(event.key)
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self.state.handle_mouse_button_down(event.button, event.pos)
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    self.state.handle_mouse_button_up(event.button, event.pos)
-                elif event.type == pygame.MOUSEMOTION:
-                    self.state.handle_mouse_motion(event.rel, event.pos, event.buttons)
-                else:
-                    pass
-            self.state.handle_erase(self.screen)
-            self.state.handle_update(update_clock.tick())
-            self.state.handle_draw(self.screen)
+                self.current_state.handle_event(event)
 
-            pygame.display.update()
+            delta_time_ms = self.clock.tick(60) 
+            delta_time_s  = delta_time_ms / 1000.0 
 
-    def change_state(self, new_state, parameters={}):
-        self.next_state            = new_state
-        self.next_state_parameters = parameters
+            self.current_state.handle_erase(self.screen)
+
+            self.current_state.handle_update(delta_time_s) 
+
+            self.current_state.handle_draw(self.screen)
+
+            pygame.display.flip() 
+
+    def change_state(self, new_state_key, parameters=None):
+        print(f"Change state requested: {new_state_key} with params {parameters}") 
+        if new_state_key not in self.states:
+            print(f"Warning: Attempted to change to unknown state '{new_state_key}'")
+            return
+        if parameters is None:
+            parameters = {}
+        self.next_state_key    = new_state_key
+        self.next_state_params = parameters
 
     def exit(self):
+        print("Exit requested.")
         self.running = False
-
-
-
-
-
-
